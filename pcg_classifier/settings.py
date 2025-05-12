@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-my@48ixp5f&br&a0)51($odjfqbexysjkyd(ahxv2qj_(8zuz!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['pcg-classifier-a6akbmaufgdjethr.northeurope-01.azurewebsites.net', 'localhost']
 

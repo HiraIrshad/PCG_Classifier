@@ -6,3 +6,4 @@ numpy
 pywavelets
 librosa
 whitenoise
+azure-storage-blob

@@ -104,6 +104,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://pcg-classifier-a6akbmaufgdjethr.northeurope-01.azurewebsites.net'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

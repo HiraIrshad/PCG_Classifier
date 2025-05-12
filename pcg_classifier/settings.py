@@ -27,9 +27,9 @@ SECRET_KEY = 'django-insecure-my@48ixp5f&br&a0)51($odjfqbexysjkyd(ahxv2qj_(8zuz!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pcg-classifier-a6akbmaufgdjethr.northeurope-01.azurewebsites.net', 'localhost']
+ALLOWED_HOSTS = ['*','localhost']
 
-
+# '127.0.0.1', 'pcg-classifier-a6akbmaufgdjethr.northeurope-01.azurewebsites.net', 
 # Application definition
 
 INSTALLED_APPS = [

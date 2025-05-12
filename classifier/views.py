@@ -6,6 +6,7 @@ import pywt
 from django.shortcuts import render
 from .forms import AudioUploadForm
 from .binary_model import predict_audio_class
+from .multi_class_model import predict_audio_class_multi
 
 
 # Function to extract MFCC features.
@@ -41,7 +42,20 @@ def upload_audio(request):
         audio_file = request.FILES['audio_file']
         features = extract_features(audio_file)
         result = predict_audio_class(features)
-        result = "Normal"
+        index = np.argmax(result)
+        if index == 0:
+            label = "Normal"
+        else:
+            label = "Abnormal"
+        result = label
+        if label == "Abnormal":
+            result2 = predict_audio_class_multi(features)
+            class_labels = ["Aortic Stenosis", "Mitral Regurgigation", "Miteral Stenosis", "MVP", "Normal"]
+            # Get index of highest probability
+            predicted_index = np.argmax(result)
+            # Map to label
+            predicted_label = class_labels[predicted_index]
+            result = label + " ,  " + predicted_label
         
         return render(request, 'classifier/result.html', {'result': result})
     return render(request, 'classifier/upload.html')

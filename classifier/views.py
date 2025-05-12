@@ -2,20 +2,45 @@ from django.shortcuts import render
 
 import librosa
 import numpy as np
+import pywt
 from django.shortcuts import render
 from .forms import AudioUploadForm
-# from .ml_model import predict_audio_class
+from .binary_model import predict_audio_class
+
+
+# Function to extract MFCC features.
+def extract_mfcc_features(signal, sr, n_mfcc=16):
+    # Extract MFCCs over the entire signal.
+    mfcc = librosa.feature.mfcc(y=signal, sr=sr, n_mfcc=n_mfcc)
+    # Compute summary statistics: mean and standard deviation per coefficient.
+    mfcc_mean = np.mean(mfcc, axis=1)
+    mfcc_std = np.std(mfcc, axis=1)
+    # Concatenate mean and standard deviation features.
+    return np.concatenate([mfcc_mean, mfcc_std])  # Resulting in 2*n_mfcc features
+
+# Function to extract DWT features.
+def extract_dwt_features(signal, wavelet='db4', level=3):
+    # Compute the discrete wavelet transform.
+    coeffs = pywt.wavedec(signal, wavelet, level=level)
+    # For each decomposition level, compute the energy of the coefficients.
+    energies = [np.sum(np.square(c)) for c in coeffs]
+    return np.array(energies)  # This will return (level+1) features.
 
 def extract_features(file):
-    y, sr = librosa.load(file, duration=5.0)  # 5 seconds of audio
-    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
-    return np.mean(mfccs.T, axis=0)
+    signal, sr = librosa.load(file, duration=5.0)  # 5 seconds of audio
+     # Extract MFCC features.
+    mfcc_feats = extract_mfcc_features(signal, sr, n_mfcc=16)
+    # Extract DWT features.
+    dwt_feats = extract_dwt_features(signal, wavelet='db4', level=3)
+    # Combine MFCC and DWT features.
+    combined_features = np.concatenate([mfcc_feats, dwt_feats])
+    return combined_features
 
 def upload_audio(request):
     if request.method == 'POST' and request.FILES['audio_file']:
         audio_file = request.FILES['audio_file']
-        # features = extract_features(audio_file)
-        # result = predict_audio_class(features)
+        features = extract_features(audio_file)
+        result = predict_audio_class(features)
         result = "Normal"
         
         return render(request, 'classifier/result.html', {'result': result})

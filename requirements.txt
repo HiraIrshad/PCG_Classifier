@@ -5,3 +5,4 @@ keras==3.7.0
 numpy
 pywavelets
 librosa
+os

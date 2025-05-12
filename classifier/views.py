@@ -7,6 +7,8 @@ from django.shortcuts import render
 from .forms import AudioUploadForm
 from .binary_model import predict_audio_class
 from .multi_class_model import predict_audio_class_multi
+from azure.storage.blob import BlobServiceClient
+from django.conf import settings
 
 
 # Function to extract MFCC features.
@@ -40,6 +42,13 @@ def extract_features(file):
 def upload_audio(request):
     if request.method == 'POST' and request.FILES['audio_file']:
         audio_file = request.FILES['audio_file']
+
+        # ✅ Upload to Azure Blob Storage
+        blob_service_client = BlobServiceClient.from_connection_string(settings.AZURE_STORAGE_CONNECTION_STRING)
+        container_client = blob_service_client.get_container_client(settings.AZURE_CONTAINER_NAME)
+        blob_client = container_client.get_blob_client(audio_file.name)
+        blob_client.upload_blob(audio_file, overwrite=True)
+        
         features = extract_features(audio_file)
         result = predict_audio_class(features)
         index = np.argmax(result)

@@ -48,6 +48,7 @@ def upload_audio(request):
         container_client = blob_service_client.get_container_client(settings.AZURE_CONTAINER_NAME)
         blob_client = container_client.get_blob_client(audio_file.name)
         blob_client.upload_blob(audio_file, overwrite=True)
+        audio_file.seek(0)
         
         features = extract_features(audio_file)
         result = predict_audio_class(features)
